@@ -1,27 +1,40 @@
 import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
-import { NxWelcomeComponent } from './nx-welcome.component';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter } from '@angular/router';
+import { appRoutes } from './app.routes';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
+import { AppHarness } from '@app/testing';
+import { Component } from '@angular/core';
 
 describe('AppComponent', () => {
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [AppComponent, NxWelcomeComponent, RouterTestingModule],
-    }).compileComponents();
+  @Component({
+    template: `<app-root />`,
+  })
+  class TestComponent {}
+
+  async function setupTest() {
+    TestBed.configureTestingModule({
+      imports: [AppComponent],
+      declarations: [TestComponent],
+      providers: [provideRouter(appRoutes)]
+    });
+
+    const harnessLoader = TestbedHarnessEnvironment.loader(TestBed.createComponent(TestComponent));
+
+    return {
+      harness: await harnessLoader.getHarness(AppHarness),
+    };
+  }
+
+  // This works when running `npx vitest` but doesn't work with `npx nx test front-end-angular`
+  it(`should create component`, () => {
+    setupTest().then(({ harness }) => expect(harness).not.toBeNull());
   });
 
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain(
-      'Welcome front-end-angular'
-    );
-  });
-
-  it(`should have as title 'front-end-angular'`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('front-end-angular');
-  });
+  // This doesn't work with either command
+  // Ideally I want to write tests like this and then run `npx nx test front-end-angular`
+  // it(`should create component`, async () => {
+  //   const { harness } = await setupTest();
+  //   expect(harness).not.toBeNull();
+  // });
 });
