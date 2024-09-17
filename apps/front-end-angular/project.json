@@ -59,21 +59,25 @@
       },
       "defaultConfiguration": "development"
     },
-    "extract-i18n": {
-      "executor": "@angular-devkit/build-angular:extract-i18n",
+    "test": {
+      "executor": "@analogjs/vitest-angular:test",
+      "outputs": ["{workspaceRoot}/reports/{projectRoot}/coverage"],
       "options": {
-        "buildTarget": "front-end-angular:build"
+        "configFile": "vite.config.mts"
+      },
+      "defaultConfiguration": "ci",
+      "configurations": {
+        "ci": {
+          "mode": "ci"
+        },
+        "dev": {
+          "mode": "test",
+          "watch": true
+        }
       }
     },
     "lint": {
       "executor": "@nx/eslint:lint"
-    },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
-      "options": {
-        "jestConfig": "apps/front-end-angular/jest.config.ts"
-      }
     }
   }
 }

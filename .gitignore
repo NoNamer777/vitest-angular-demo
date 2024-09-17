@@ -4,6 +4,8 @@
 dist
 tmp
 /out-tsc
+.vite/
+reports/
 
 # dependencies
 node_modules
